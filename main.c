@@ -12,22 +12,57 @@
 
 #include "pipex.h"
 
-int check_path(char *arg, char **paths);
+char *get_command(char *arg, char **paths);
 char **get_paths(char **env);
 
 
 int main(int argc, char *argv[], char *env[])
 {
+    char    *cmd;
+    char    **args;
+    pid_t   pid;
+
     if (argc < 2)
         return (1);
-    if (check_path(argv[1], env))
-            ft_printf("%s --- is a valid command", argv[1]);
+    args = ft_split(argv[1], ' ');
+    cmd = get_command(args[0], env);
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        return (1);
+    }
+    if (pid == 0)
+    {
+        if (cmd)
+            execve(cmd, args, env);
+        else
+            ft_printf("bash: %s: command not found", argv[1]);
+    }
     else
-        ft_printf("bash: %s: command not found", argv[1]);
+        waitpid(pid, NULL, 0);
+    if (args)
+        ft_free_all(args);
+    if (cmd)
+        free(cmd);
     return (0);
 }
 
-int check_path(char *arg, char **env)
+char **get_paths(char **env)
+{
+    char    **paths;
+    
+    while (*env)
+    {
+        if (ft_strncmp(*env, "PATH=", 5) == 0)
+            break ;
+        env++;
+    }
+    paths = ft_split(*env, ':');
+    return (paths);
+}
+
+char *get_command(char *arg, char **env)
 {
     int     i;
     char    *tmp;
@@ -43,25 +78,11 @@ int check_path(char *arg, char **env)
         free(tmp);
         if (access(path, X_OK) == 0)
         {
-            free(path);
             ft_free_all(paths);
-            return (1);
+            return (path);
         }
         free(path);
     }
     ft_free_all(paths);
     return (0);
-}
-
-char **get_paths(char **env)
-{
-    char    **paths;
-    
-    while (*env)
-    {
-        if (ft_strncmp(*env, "PATH=", 5) == 0)
-            break ;
-        env++;
-    }
-    paths = ft_split(*env, ':');
 }
