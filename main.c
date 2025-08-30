@@ -11,41 +11,95 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <fcntl.h>
 
 char *get_command(char *arg, char **paths);
 char **get_paths(char **env);
-
+int init_pid(pid_t *pid);
+int    reciver_fork(char *argv, char **env, int fd[2]);
+int    giver_fork(char *argv, char **env, int fd[2]);
 
 int main(int argc, char *argv[], char *env[])
+{
+    int     fd[2];
+
+    if (pipe(fd) == -1)
+        return (1);
+    if (argc < 2)
+        return (1);
+    if (!giver_fork(argv[1], env, fd))
+        return (1);
+    if (!reciver_fork(argv[2], env, fd))
+        return (1);
+    close(fd[0]);
+    close(fd[1]);
+    waitpid(-1, NULL, 0);
+    return (0);
+}
+
+int    giver_fork(char *argv, char **env, int fd[2])
 {
     char    *cmd;
     char    **args;
     pid_t   pid;
 
-    if (argc < 2)
-        return (1);
-    args = ft_split(argv[1], ' ');
+    if (!init_pid(&pid))
+        return (0);
+    args = ft_split(argv, ' ');
     cmd = get_command(args[0], env);
-    pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        return (1);
-    }
     if (pid == 0)
     {
+        dup2(fd[1], STDOUT_FILENO);
+        close(fd[1]);
+        close(fd[0]);
         if (cmd)
             execve(cmd, args, env);
         else
-            ft_printf("bash: %s: command not found", argv[1]);
+            ft_printf("bash: %s: command not found", args[0]);
     }
-    else
-        waitpid(pid, NULL, 0);
     if (args)
         ft_free_all(args);
     if (cmd)
         free(cmd);
-    return (0);
+    return (1);
+}
+
+int    reciver_fork(char *argv, char **env, int fd[2])
+{
+    char    *cmd;
+    char    **args;
+    pid_t   pid;
+
+    if (!init_pid(&pid))
+        return (0);
+    args = ft_split(argv, ' ');
+    cmd = get_command(args[0], env);
+    if (pid == 0)
+    {
+        dup2(fd[0], STDIN_FILENO);
+        close(fd[1]);
+        close(fd[0]);
+        if (cmd)
+            execve(cmd, args, env);
+        else
+            ft_printf("bash : %s: command not found", args[0]);
+    }
+    if (args)
+        ft_free_all(args);
+    if (cmd)
+        free(cmd);
+    return (1);
+}
+
+int init_pid(pid_t *pid)
+{
+    *pid = fork();
+    if (*pid == -1)
+    {
+        perror("fork");
+        return (0);
+    }
+    return (1);
 }
 
 char **get_paths(char **env)
