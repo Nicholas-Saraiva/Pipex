@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 SRC = main.c
-SRC += src/ft_utils.c
+SRC += src/ft_utils.c src/ft_getters.c
 OBJ = $(SRC:.c=.o)
 
 LIBFT = includes/libft 

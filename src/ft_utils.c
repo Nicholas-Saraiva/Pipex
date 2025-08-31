@@ -23,3 +23,28 @@ void	ft_free_all(char **str)
 		free(str[i]);
 	free(str);
 }
+
+void	ft_error(char *str)
+{
+	ft_putstr_fd(str, 2);
+	exit(1);
+}
+
+void    closing_fds(int fd[2], int fd_file[2])
+{
+        close(fd[1]);
+        close(fd[0]);
+        close(fd_file[1]);
+        close(fd_file[0]);
+}
+
+int init_pid(pid_t *pid)
+{
+    *pid = fork();
+    if (*pid == -1)
+    {
+        perror("fork");
+        return (0);
+    }
+    return (1);
+}
