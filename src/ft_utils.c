@@ -30,12 +30,11 @@ void	ft_error(char *str)
 	exit(1);
 }
 
-void    closing_fds(int fd[2], int fd_file[2])
+void    closing_fds(int fd[2], int fd_file)
 {
         close(fd[1]);
         close(fd[0]);
-        close(fd_file[1]);
-        close(fd_file[0]);
+        close(fd_file);
 }
 
 int init_pid(pid_t *pid)
