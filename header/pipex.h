@@ -22,11 +22,11 @@
 //---Utils
 void	ft_free_all(char **str);
 void	ft_error(char *str);
-void    closing_fds(int fd[2], int fd_file[2]);
+void    closing_fds(int fd[2], int fd_file);
 int init_pid(pid_t *pid);
 
 //---Getters
-int get_fd_file(int fd_file[2], char *read_file, char *write_file);
+int get_fd_file(char *file, char option);
 char **get_paths(char **env);
 char *get_command(char *arg, char **env);
 #endif
