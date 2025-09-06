@@ -12,8 +12,8 @@
 
 #include "pipex.h"
 
-static pid_t reciver_fork(char *argv, char *file, char **env, int fd[2]);
-static pid_t giver_fork(char *argv, char *file, char **env, int fd[2]);
+static pid_t reciver_fork(char *argv, char **env, int fd[2], int fd_file[2]);
+static pid_t giver_fork(char *argv, char **env, int fd[2], int fd_file[2]);
 
 int main(int argc, char *argv[], char *env[])
 {
@@ -28,26 +28,26 @@ int main(int argc, char *argv[], char *env[])
     pid_reciver = 0;
     fd_file[0] = 0;
     fd_file[1] = 0;
-    if (argc < 4)
+    fd[0] = 0;
+    fd[1] = 0;
+    if (argc < 5)
         ft_error("It must take 4 arguments, like: ./pipex infile \"ls -l\" \"wc -l\" outfile\n");
+    get_fd_file(fd_file, argv[1], argv[4]);
     if (pipe(fd) == -1)
         return (1);
-    if (fd_file[0] != 0)
-        pid_giver = giver_fork(argv[2], argv[1], env, fd);
-    if (fd_file[1] != 0)
-        pid_reciver = reciver_fork(argv[3], argv[4], env, fd);
+    pid_giver = giver_fork(argv[2], env, fd, fd_file);
+    pid_reciver = reciver_fork(argv[3], env, fd, fd_file);
     close(fd[0]);
     close(fd[1]);
+    waitpid(pid_giver, NULL, 0);              
     waitpid(pid_reciver, &status, 0);
-    while (wait(NULL) != -1);
     return (WEXITSTATUS(status));
 }
 
-static pid_t giver_fork(char *argv, char *file, char **env, int fd[2])
+static pid_t giver_fork(char *argv, char **env, int fd[2], int fd_file[2])
 {
     char    *cmd;
     char    **args;
-    int     fd_file;
     pid_t   pid;
 
     if (!init_pid(&pid))
@@ -56,19 +56,25 @@ static pid_t giver_fork(char *argv, char *file, char **env, int fd[2])
     cmd = get_command(args[0], env);
     if (pid == 0)
     {
-        fd_file = get_fd_file(file, 'g');
-        dup2(fd_file, STDIN_FILENO);
-        dup2(fd[1], STDOUT_FILENO);
-        closing_fds(fd, fd_file);
-        if (!cmd || execve(cmd, args, env) == -1)
+        if (!cmd)
         {
             ft_printf("bash : %s: command not found", args[0]);
+            ft_free_all(args);
+            if (cmd)
+                free(cmd);
+            exit(127);
+        }
+        dup2(fd[1], STDOUT_FILENO);
+        if (dup2(fd_file[0], STDIN_FILENO) == -1)
+        {
             if (args)
                 ft_free_all(args);
             if (cmd)
                 free(cmd);
-            return (0);
+            ft_error("bash: : No such file or director\n");
         }
+        closing_fds(fd, fd_file);
+        execve(cmd, args, env);
     }
     if (args)
         ft_free_all(args);
@@ -77,11 +83,10 @@ static pid_t giver_fork(char *argv, char *file, char **env, int fd[2])
     return (pid);
 }
 
-static pid_t reciver_fork(char *argv, char *file, char **env, int fd[2])
+static pid_t reciver_fork(char *argv, char **env, int fd[2], int fd_file[2])
 {
     char    *cmd;
     char    **args;
-    int     fd_file;
     pid_t   pid;
 
     if (!init_pid(&pid))
@@ -90,19 +95,31 @@ static pid_t reciver_fork(char *argv, char *file, char **env, int fd[2])
     cmd = get_command(args[0], env);
     if (pid == 0)
     {
-        fd_file = get_fd_file(file, 'r');
-        dup2(fd_file, STDOUT_FILENO);
-        dup2(fd[0], STDIN_FILENO);
-        closing_fds(fd, fd_file);
-        if (!cmd || execve(cmd, args, env) == -1)
+        if (!cmd)
         {
             ft_printf("bash : %s: comand not found", args[0]);
             if (args)
                 ft_free_all(args);
             if (cmd)
                 free(cmd);
-            return (0);
+            exit (127);
         }
+        if (dup2(fd_file[1], STDOUT_FILENO) == -1)
+        {
+            perror("dup2 outfile");
+            if (args) ft_free_all(args);
+            if (cmd) free(cmd);
+            exit(1);
+        }
+        if (dup2(fd[0], STDIN_FILENO) == -1)
+        {
+            perror("dup2 pipe");
+            if (args) ft_free_all(args);
+            if (cmd) free(cmd);
+            exit(1);
+        }
+        closing_fds(fd, fd_file);
+        execve(cmd, args, env);
     }
     if (args)
         ft_free_all(args);
