@@ -6,12 +6,12 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:45:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/08/31 17:45:09 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/06 14:55:13 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # ifndef PIPEX_H
-#define PIPPEX_H
+#define PIPEX_H
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
