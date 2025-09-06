@@ -12,17 +12,10 @@
 
 #include "pipex.h"
 
-int get_fd_file(char *file, char option)
+void get_fd_file(int fd_file[2], char *read_file, char *write_file)
 {
-    if (option = 'g')
-        return (open(file, O_RDONLY));
-    else 
-    {
-        if (access(file, F_OK) == 0  && access(file, W_OK) != 0)
-            ft_printf("Could not open write file\n");
-        else if (access(file, W_OK) == 0 || access(file, F_OK) != 0)
-            return (open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644));
-    }
+    fd_file[0] = open(read_file, O_RDONLY);
+    fd_file[1] = open(write_file, O_WRONLY | O_CREAT | O_TRUNC, 0671);
 }
 
 char **get_paths(char **env)
