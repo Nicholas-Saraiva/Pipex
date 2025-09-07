@@ -40,6 +40,8 @@ char *get_command(char *arg, char **env)
     char    **paths;
 
     i = -1;
+    if (!arg)
+        return (0);
     paths = get_paths(env);
     while (paths[++i])
     {
