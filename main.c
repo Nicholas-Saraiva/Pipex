@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/08 17:28:34 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/08 18:15:21 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,13 @@ static void	fill_var(int *fd_file, int *pfd, int *pid_cmds)
 	pfd[1] = 0;
 }
 
-get_shell(char **env)
+char	*get_shell(char **env)
 {
 	char 	**str;
 	char	*shell;
+	int		i;
 
+	i = -1;
 	while (*env)
 	{
 		if (ft_strncmp(*env, "SHELL=", 6) == 0)
@@ -61,21 +63,28 @@ get_shell(char **env)
 		env++;
 	}
 	str = ft_split(*env, '/');
-	while (*str)
-		str++;
-	shell = ft_strdup(--str);
+	while (str[++i]);
+	shell = ft_strdup(str[i -1]);
 	ft_free_all(str);
 	return (shell);
 }
 
-void	cmd_not_found(char **args, char **env, char *cmd)
+void	free_cmds(char **args, char **env, char *cmd)
 {
-	ft_putstr_fd("bash : " , 2);
+	char *shell;
+
+	shell = get_shell(env);
+	ft_putstr_fd(shell, 2);
+	ft_putstr_fd(": no such file or directory: " , 2);
 	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd(": command not found" , 2);
+	ft_putstr_fd("\n\0", 2);
+	if (shell)
+		free(shell);
+	if (args)
+		ft_free_all(args);
 	if (cmd)
 		free(cmd);
-	exit(127);
+	exit(1);
 }
 
 static pid_t giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
@@ -94,13 +103,7 @@ static pid_t giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 			cmd_not_found(args, env, cmd);
 		dup2(pfd[1], STDOUT_FILENO);
 		if (dup2(fd_file[0], STDIN_FILENO) == -1)
-		{
-			if (args)
-				ft_free_all(args);
-			if (cmd)
-				free(cmd);
-			ft_error("bash: : No such file or director\n");
-		}
+			free_cmds(args, env, cmd);
 		closing_fds(pfd, fd_file);
 		execve(cmd, args, env);
 	}
@@ -124,28 +127,11 @@ static pid_t reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	if (pid == 0)
 	{
 		if (!cmd)
-		{
-			ft_printf("bash : %s: comand not found", args[0]);
-				if (args)
-					ft_free_all(args);
-				if (cmd)
-					free(cmd);
-			exit (127);
-		}
+			cmd_not_found(args, env, cmd);
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup2 outfile");
-			if (args) ft_free_all(args);
-				if (cmd) free(cmd);
-			exit(1);
-		}
+			free_cmds(args, env, cmd);
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
-		{
-			perror("dup2 pipe");
-			if (args) ft_free_all(args);
-			if (cmd) free(cmd);
-			exit(1);
-		}
+			free_cmds(args, env, cmd);
 		closing_fds(pfd, fd_file);
 		execve(cmd, args, env);
 	}

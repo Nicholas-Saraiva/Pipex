@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:48:18 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/08/31 17:48:20 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/08 18:17:06 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void get_fd_file(int fd_file[2], char *read_file, char *write_file)
 {
     fd_file[0] = open(read_file, O_RDONLY);
     fd_file[1] = open(write_file, O_WRONLY | O_CREAT | O_TRUNC, 0671);
+	if ()
 }
 
 char **get_paths(char **env)
