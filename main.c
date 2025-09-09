@@ -49,24 +49,12 @@ static void	fill_var(int *fd_file, int *pfd, int *pid_cmds)
 	pfd[1] = 0;
 }
 
-char	*get_shell(char **env)
+void	free_dep(char **args, char *cmd)
 {
-	char 	**str;
-	char	*shell;
-	int		i;
-
-	i = -1;
-	while (*env)
-	{
-		if (ft_strncmp(*env, "SHELL=", 6) == 0)
-			break ;
-		env++;
-	}
-	str = ft_split(*env, '/');
-	while (str[++i]);
-	shell = ft_strdup(str[i -1]);
-	ft_free_all(str);
-	return (shell);
+	if (args)
+		ft_free_all(args);
+	if (cmd)
+		free(cmd);
 }
 
 void	free_cmds(char **args, char **env, char *cmd)
@@ -80,10 +68,7 @@ void	free_cmds(char **args, char **env, char *cmd)
 	ft_putstr_fd("\n\0", 2);
 	if (shell)
 		free(shell);
-	if (args)
-		ft_free_all(args);
-	if (cmd)
-		free(cmd);
+	free_dep(args, cmd);
 	exit(1);
 }
 
@@ -93,24 +78,23 @@ static pid_t giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	char	**args;
 	pid_t	pid;
 
+	if (!*argv)
+		return (-1);
 	if (!init_pid(&pid))
 		return (0);
-	args = ft_split(argv, ' ');
-	cmd = get_command(args[0], env);
+	args = get_command(argv);
+	cmd = get_command_path(args[0], env);
 	if (pid == 0)
 	{
 		if (!cmd)
-			cmd_not_found(args, env, cmd);
+			cmd_not_found(args, env, args[0]);
 		dup2(pfd[1], STDOUT_FILENO);
 		if (dup2(fd_file[0], STDIN_FILENO) == -1)
 			free_cmds(args, env, cmd);
 		closing_fds(pfd, fd_file);
 		execve(cmd, args, env);
 	}
-	if (args)
-		ft_free_all(args);
-	if (cmd)
-		free(cmd);
+	free_dep(args, cmd);
 	return (pid);
 }
 
@@ -120,14 +104,16 @@ static pid_t reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	char	**args;
 	pid_t	pid;
 
+	if (!*argv)
+		return (-1);
 	if (!init_pid(&pid))
 		return (0);
-	args = ft_split(argv, ' ');
-	cmd = get_command(args[0], env);
+	args = get_command(argv);
+	cmd = get_command_path(args[0], env);
 	if (pid == 0)
 	{
 		if (!cmd)
-			cmd_not_found(args, env, cmd);
+			cmd_not_found(args, env, args[0]);
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
 			free_cmds(args, env, cmd);
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
@@ -135,9 +121,6 @@ static pid_t reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 		closing_fds(pfd, fd_file);
 		execve(cmd, args, env);
 	}
-	if (args)
-		ft_free_all(args);
-	if (cmd)
-		free(cmd);
+	free_dep(args, cmd);
 	return (pid);
 }

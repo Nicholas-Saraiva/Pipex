@@ -14,12 +14,16 @@
  
 void	cmd_not_found(char **args, char **env, char *cmd)
 {
-	ft_putstr_fd("zsh : " , 2);
+	char *shell;
+
+	shell = get_shell(env);
+	ft_putstr_fd(shell , 2);
+	ft_putstr_fd(": " , 2);
 	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd(": command not found" , 2);
+	ft_putstr_fd(": command not found\n\0" , 2);
+	if (shell)
+		free(shell);
 	if (args)
 		ft_free_all(args);
-	if (cmd)
-		free(cmd);
 	exit(127);
 }

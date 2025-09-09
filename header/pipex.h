@@ -26,9 +26,11 @@ void    closing_fds(int fd[2], int fd_file[2]);
 int init_pid(pid_t *pid);
 
 //---Getters
-void get_fd_file(int fd_file[2], char *read_file, char *write_file);
-char **get_paths(char **env);
-char *get_command(char *arg, char **env);
+void	get_fd_file(int fd_file[2], char *read_file, char *write_file);
+char	**get_paths(char **env);
+char	**get_command(char *argv);
+char	*get_command_path(char *arg, char **env);
+char	*get_shell(char **env);
 
 //---Errors
 void	cmd_not_found(char **args, char **env, char *cmd);
