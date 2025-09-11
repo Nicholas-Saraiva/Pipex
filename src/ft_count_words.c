@@ -10,51 +10,42 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "pipex.h"
+
+static void init_var(int *i, int *in_quote, char *qchar, int *count);
+
 int count_words(char *s)
 {
-	char qchar;
-	int in_quote;
-	int count;
-	int i;
+	int		i;
+	int		in_quote;
+	int		count;
+	char	qchar;
 
-	qchar = 0;
-	in_quote = 0;
-	count = 0;
-	i = 0;
+	init_var(&i, &in_quote, &qchar, &count);
+	if (!s) 
+		return 0;
 	while (s[i])
 	{
-		while (s[i] && is_space((unsigned char)s[i]))
+		while (s[i] && is_space(s[i]))
 			i++;
 		if (!s[i])
 			break;
 		count++;
 		while (s[i])
 		{
-			if (!in_quote && is_space((unsigned char)s[i]))
+			if (!in_quote && is_space(s[i]))
 				break;
-			if ((s[i] == '\'' || s[i] == '"'))
-			{
-				if (!in_quote)
-				{
-					in_quote = 1;
-					qchar = s[i];
-				}
-				else if (qchar == s[i])
-				{
-					in_quote = 0;
-					qchar = 0;
-				}
-				i++;
-				continue;
-			}
-			if (s[i] == '\\' && (!in_quote || qchar == '"') && s[i + 1])
-			{
-				i += 2; /* skip the backslash, take next literally */
-				continue;
-			}
+			check_in_quote(s[i], &in_quote, &qchar);
 			i++;
 		}
 	}
-	if (in_quote)
-		return ft_split(s, ' ');
+	return (count);
+}
+
+static void init_var(int *i, int *in_quote, char *qchar, int *count)
+{
+	*i = 0;
+	*in_quote = 0;
+	*qchar = 0;
+	*count = 0;
 }

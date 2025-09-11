@@ -48,3 +48,27 @@ int init_pid(pid_t *pid)
     }
     return (1);
 }
+
+int	check_in_quote(char s, int *in_quote, char *qchar)
+{
+	if ((s == '\'' || s == '"'))
+	{
+		if (*in_quote == 0)
+		{
+			*in_quote = 1;
+			*qchar = s;
+		}
+		else if (*qchar == s)
+		{
+			*in_quote = 0;
+			*qchar = 0;
+		}
+		return (1);
+	}
+	return (0);
+}
+
+int is_space(unsigned char c)
+{
+	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f');
+}

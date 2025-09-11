@@ -1,25 +1,106 @@
 #include "pipex.h"
 
-static int	check_in_quote(char s, int *in_quote, char *qchar)
+
+static int	create_cmd(char *argv, char **args,int words);
+static int	have_in_quote(char *argv);
+int	size_next_word(char *argv, int i);
+
+/*
+	#Check if has quote open and closing like '  '
+	if it has 
+		pass to count words
+	else
+		return (ft_split(*arg, ' '));
+	
+	char **argv = malloc(words * sizeof(char *));
+
+	#Check size of next word in argv[i];
+	function have to in count:
+	if is in quote, space not end a word;
+	if is not int quote, space end a word;
+
+	argv[i] = malloc(size_word * sizeof(char));
+
+	now while (is_not_space && i++)
+	
+	while (size_word--)
+		argv[i] = argv[i];
+*/
+
+
+char **get_command(char *argv)
 {
-	if ((s == '\'' || s == '"'))
+	char	**args;
+	int		words;
+	int		i;
+	int		j;
+
+	i = -1;
+	j = 0;
+	if (!have_in_quote(argv))
+		return (ft_split(argv, ' '));
+	words = count_words(argv);
+	args = ft_calloc(words + 1, sizeof(char *));
+	if (!args)
+		return (NULL);
+	if (!create_cmd(argv, args, words))
 	{
-		if (!*in_quote)
-		{
-			*in_quote = 1;
-			*qchar = s;
-		}
-		else if (*qchar == s)
-		{
-			*in_quote = 0;
-			*qchar = 0;
-		}
-		return (1);
+		ft_free_all(args);
+		perror("Malloc failed in create_cmd");
+		exit(1);
 	}
-	return (0);
+	return (args);
 }
 
-int	size_next_word(char *s, int i)
+static int	create_cmd(char *argv, char **args,int words)
+{
+	int	i;
+	int	j;
+	int	z;
+	int	size_word;
+
+	i = -1;
+	j = -1;
+	size_word = -1;
+	while (++i < words)
+	{
+		z = -1;
+		while (is_space(argv[++j]));
+		size_word = size_next_word(argv, j);
+		args[i] = ft_calloc(size_word + 1, sizeof(char));
+		if (!args[i])
+			return (0);
+		if (argv[j] == '\'' || argv[j] == '"')
+			j++;
+		while (size_word--)
+		
+			args[i][++z] = argv[j++];
+	}
+	return (1);
+}
+
+static int	have_in_quote(char *argv)
+{
+	int		i;
+	int		in_quote;
+	int		has_quote;
+	char	qchar;
+
+	i = -1;
+	in_quote = 0;
+	has_quote = 0;
+	qchar = 0;
+	while (argv[++i])
+	{
+		if (check_in_quote(argv[i], &in_quote, &qchar))
+			has_quote = 1;
+	}
+	if (in_quote && has_quote || !has_quote)
+		return (0);
+	return (1);
+}
+
+int	size_next_word(char *argv, int i)
 {
 	int 	len;
 	int		in_quote;
@@ -28,71 +109,19 @@ int	size_next_word(char *s, int i)
 	len = 0;
 	in_quote = 0;
 	qchar = 0;
-	while (s[i])
+	if (check_in_quote(argv[i], &in_quote, &qchar))
+		i++;
+	while ((!in_quote && argv[i] != ' ') || (in_quote && argv[i] != qchar))
 	{
-		if (!in_quote && is_space((unsigned char)s[j]))
-			break;
-		if (check_in_quote(s[i], &in_quote, &qchar))
+		if (check_in_quote(argv[i], &in_quote, &qchar))
 		{
 			i++;
 			continue;
 		}
-		if (s[i] == '\\' && (in_quote && qchar == '\''))
+		if (argv[i] == '\\' && (in_quote && qchar == '\''))
 			len++;
 		i++;
 		len++;
 	}
 	return (len);
-}
-
-char **get_command(char *s)
-{
-	int	i;
-
-	while (s[i])
-	{
-		char *arg = (char *)malloc(size_next_word(s, i) + 1);
-		if (!arg)
-		{
-			ft_free_all(argv);
-			return NULL;
-		}
-
-		/* copy token content */
-		size_t k = 0;
-		in_quote = 0;
-		qchar = 0;
-		while (i < j)
-		{
-			if ((s[i] == '\'' || s[i] == '"'))
-			{
-				if (!in_quote)
-				{
-					in_quote = 1;
-					qchar = s[i];
-					i++;
-					continue;
-				}
-				else if (qchar == s[i])
-				{
-					in_quote = 0;
-					qchar = 0;
-					i++;
-					continue;
-				}
-			}
-			else if (s[i] == '\\' && (in_quote && qchar == '\''))
-			{
-				arg[k++] = s[i];
-				arg[k++] = s[i++];
-				continue;
-			}
-			arg[k++] = s[i++];
-		}
-		arg[k] = '\0';
-		argv[idx++] = arg;
-	}
-	argv[idx] = NULL;
-	return argv;
-
 }
