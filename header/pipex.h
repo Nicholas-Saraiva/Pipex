@@ -28,7 +28,7 @@ int		check_in_quote(char s, int *in_quote, char *qchar);
 int		is_space(unsigned char c);
 
 //---Getters
-void	get_fd_file(int fd_file[2], char *read_file, char *write_file);
+void	get_fd_file(int fd_file[2], char *read_file, char *write_file, char **env);
 char	**get_paths(char **env);
 char	**get_command(char *argv);
 char	*get_command_path(char *arg, char **env);

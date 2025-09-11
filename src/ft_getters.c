@@ -12,10 +12,21 @@
 
 #include "pipex.h"
 
-void get_fd_file(int fd_file[2], char *read_file, char *write_file)
+void get_fd_file(int fd_file[2], char *read_file, char *write_file, char **env)
 {
+	char	*shell;
+
+	shell = get_shell(env);
+
 	fd_file[0] = open(read_file, O_RDONLY);
 	fd_file[1] = open(write_file, O_WRONLY | O_CREAT | O_TRUNC, 0671);
+	if (fd_file[0] == -1)
+	{
+		ft_putstr_fd(shell, 2);
+		ft_putstr_fd(": no such file or directory: " , 2);
+		ft_putstr_fd(read_file, 2);
+		ft_putstr_fd("\n\0", 2);
+	}
 }
 
 char *get_shell(char **env)
@@ -64,6 +75,8 @@ char *get_command_path(char *arg, char **env)
 	i = -1;
 	if (!arg)
 		return (0);
+	if (access(arg, X_OK) == 0)
+		return (ft_strdup(arg));
 	paths = get_paths(env);
 	while (paths[++i])
 	{

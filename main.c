@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/08 18:15:21 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/11 16:35:58 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,11 @@ int	main(int argc, char *argv[], char *env[])
 	
 	status = 0;
 	fill_var(fd_file, pfd, pid_cmds);
+	if (argc == 1)
+		return (2);
 	if (argc < 5)
 		return (1);
-	get_fd_file(fd_file, argv[1], argv[4]);
+	get_fd_file(fd_file, argv[1], argv[4], env);
 	if (pipe(pfd) == -1)
 		return (1);
 	pid_cmds[0] = giver_fork(argv[2], env, pfd, fd_file);
@@ -59,15 +61,6 @@ void	free_dep(char **args, char *cmd)
 
 void	free_cmds(char **args, char **env, char *cmd)
 {
-	char *shell;
-
-	shell = get_shell(env);
-	ft_putstr_fd(shell, 2);
-	ft_putstr_fd(": no such file or directory: " , 2);
-	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd("\n\0", 2);
-	if (shell)
-		free(shell);
 	free_dep(args, cmd);
 	exit(1);
 }

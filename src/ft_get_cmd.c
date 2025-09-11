@@ -1,7 +1,7 @@
 #include "pipex.h"
 
 
-static int	create_cmd(char *argv, char **args,int words);
+static int	create_cmd(char *argv, char **args, int words, char qchar);
 static int	have_in_quote(char *argv);
 int	size_next_word(char *argv, int i);
 
@@ -22,7 +22,6 @@ int	size_next_word(char *argv, int i);
 	argv[i] = malloc(size_word * sizeof(char));
 
 	now while (is_not_space && i++)
-	
 	while (size_word--)
 		argv[i] = argv[i];
 */
@@ -43,7 +42,7 @@ char **get_command(char *argv)
 	args = ft_calloc(words + 1, sizeof(char *));
 	if (!args)
 		return (NULL);
-	if (!create_cmd(argv, args, words))
+	if (!create_cmd(argv, args, words, have_in_quote(argv)))
 	{
 		ft_free_all(args);
 		perror("Malloc failed in create_cmd");
@@ -52,7 +51,7 @@ char **get_command(char *argv)
 	return (args);
 }
 
-static int	create_cmd(char *argv, char **args,int words)
+static int	create_cmd(char *argv, char **args, int words, char qchar)
 {
 	int	i;
 	int	j;
@@ -73,8 +72,11 @@ static int	create_cmd(char *argv, char **args,int words)
 		if (argv[j] == '\'' || argv[j] == '"')
 			j++;
 		while (size_word--)
-		
+		{
+			if (argv[j] == qchar)
+				j++;
 			args[i][++z] = argv[j++];
+		}
 	}
 	return (1);
 }
@@ -93,11 +95,15 @@ static int	have_in_quote(char *argv)
 	while (argv[++i])
 	{
 		if (check_in_quote(argv[i], &in_quote, &qchar))
+		{
 			has_quote = 1;
+			if (!qchar)
+				qchar = argv[i]; 
+		}
 	}
 	if (in_quote && has_quote || !has_quote)
 		return (0);
-	return (1);
+	return (qchar);
 }
 
 int	size_next_word(char *argv, int i)
@@ -111,7 +117,7 @@ int	size_next_word(char *argv, int i)
 	qchar = 0;
 	if (check_in_quote(argv[i], &in_quote, &qchar))
 		i++;
-	while ((!in_quote && argv[i] != ' ') || (in_quote && argv[i] != qchar))
+	while ((!in_quote && argv[i] != ' ') || (in_quote && argv[i]))
 	{
 		if (check_in_quote(argv[i], &in_quote, &qchar))
 		{
