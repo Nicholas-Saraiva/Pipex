@@ -12,34 +12,36 @@
 
 #include "pipex.h"
 
-void get_fd_file(int fd_file[2], char *read_file, char *write_file, char **env)
+void	get_fd_file(int fd_file[2], char *read_file,
+			char *write_file, char **env)
 {
 	char	*shell;
-
-	shell = get_shell(env);
 
 	fd_file[0] = open(read_file, O_RDONLY);
 	fd_file[1] = open(write_file, O_WRONLY | O_CREAT | O_TRUNC, 0671);
 	if (fd_file[0] == -1)
 	{
+		shell = get_shell(env);
 		ft_putstr_fd(shell, 2);
-		ft_putstr_fd(": no such file or directory: " , 2);
+		ft_putstr_fd(": no such file or directory: ", 2);
 		ft_putstr_fd(read_file, 2);
 		ft_putstr_fd("\n\0", 2);
+		if (shell)
+			free(shell);
 	}
 }
 
-char *get_shell(char **env)
+char	*get_shell(char **env)
 {
-	char **str;
-	char *shell;
-	int i;
+	char	**str;
+	char	*shell;
+	int		i;
 
 	i = -1;
 	while (env[++i])
 	{
 		if (ft_strncmp(env[i], "SHELL=", 6) == 0)
-			break;
+			break ;
 	}
 	str = ft_split(*env, '/');
 	i = -1;
@@ -50,27 +52,28 @@ char *get_shell(char **env)
 	return (shell);
 }
 
-char **get_paths(char **env)
+char	**get_paths(char **env)
 {
-	char **paths;
-	char **paths2;
-	int i;
+	char	**paths;
+	char	**paths2;
+	int		i;
+
 	i = -1;
 	while (env[++i])
 		if (ft_strncmp(env[i], "PATH=", 5) == 0)
-			break;
+			break ;
 	paths = ft_split(env[i], '=');
 	paths2 = ft_split(paths[1], ':');
 	ft_free_all(paths);
 	return (paths2);
 }
 
-char *get_command_path(char *arg, char **env)
+char	*get_command_path(char *arg, char **env)
 {
-	int i;
-	char *tmp;
-	char *path;
-	char **paths;
+	int		i;
+	char	*tmp;
+	char	*path;
+	char	**paths;
 
 	i = -1;
 	if (!arg)

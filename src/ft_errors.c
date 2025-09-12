@@ -11,16 +11,16 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
- 
+
 void	cmd_not_found(char **args, char **env, char *cmd)
 {
-	char *shell;
+	char	*shell;
 
 	shell = get_shell(env);
-	ft_putstr_fd(shell , 2);
-	ft_putstr_fd(": " , 2);
+	ft_putstr_fd(shell, 2);
+	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd(": command not found\n\0" , 2);
+	ft_putstr_fd(": command not found\n\0", 2);
 	if (shell)
 		free(shell);
 	if (args)

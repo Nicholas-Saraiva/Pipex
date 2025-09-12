@@ -1,33 +1,23 @@
-#include "pipex.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_get_cmd.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/12 14:29:34 by nsaraiva          #+#    #+#             */
+/*   Updated: 2025/09/12 14:29:35 by nsaraiva         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "pipex.h"
 
 static int	create_cmd(char *argv, char **args, int words, char qchar);
 static int	have_in_quote(char *argv);
-int	size_next_word(char *argv, int i);
+static int	size_next_word(char *argv, int i);
+static int	alloc_new_word(char *argv, int *j, char **args, int *i);
 
-/*
-	#Check if has quote open and closing like '  '
-	if it has 
-		pass to count words
-	else
-		return (ft_split(*arg, ' '));
-	
-	char **argv = malloc(words * sizeof(char *));
-
-	#Check size of next word in argv[i];
-	function have to in count:
-	if is in quote, space not end a word;
-	if is not int quote, space end a word;
-
-	argv[i] = malloc(size_word * sizeof(char));
-
-	now while (is_not_space && i++)
-	while (size_word--)
-		argv[i] = argv[i];
-*/
-
-
-char **get_command(char *argv)
+char	**get_command(char *argv)
 {
 	char	**args;
 	int		words;
@@ -60,14 +50,11 @@ static int	create_cmd(char *argv, char **args, int words, char qchar)
 
 	i = -1;
 	j = -1;
-	size_word = -1;
 	while (++i < words)
 	{
 		z = -1;
-		while (is_space(argv[++j]));
-		size_word = size_next_word(argv, j);
-		args[i] = ft_calloc(size_word + 1, sizeof(char));
-		if (!args[i])
+		size_word = alloc_new_word(argv, &j, args, &i);
+		if (size_word == -1)
 			return (0);
 		if (argv[j] == '\'' || argv[j] == '"')
 			j++;
@@ -79,6 +66,19 @@ static int	create_cmd(char *argv, char **args, int words, char qchar)
 		}
 	}
 	return (1);
+}
+
+static int	alloc_new_word(char *argv, int *j, char **args, int *i)
+{
+	int	size_word;
+
+	while (is_space(argv[++(*j)]))
+		continue ;
+	size_word = size_next_word(argv, *j);
+	args[*i] = ft_calloc(size_word + 1, sizeof(char));
+	if (!args[*i])
+		return (-1);
+	return (size_word);
 }
 
 static int	have_in_quote(char *argv)
@@ -98,7 +98,7 @@ static int	have_in_quote(char *argv)
 		{
 			has_quote = 1;
 			if (!qchar)
-				qchar = argv[i]; 
+				qchar = argv[i];
 		}
 	}
 	if (in_quote && has_quote || !has_quote)
@@ -106,9 +106,9 @@ static int	have_in_quote(char *argv)
 	return (qchar);
 }
 
-int	size_next_word(char *argv, int i)
+static int	size_next_word(char *argv, int i)
 {
-	int 	len;
+	int		len;
 	int		in_quote;
 	char	qchar;
 
@@ -122,7 +122,7 @@ int	size_next_word(char *argv, int i)
 		if (check_in_quote(argv[i], &in_quote, &qchar))
 		{
 			i++;
-			continue;
+			continue ;
 		}
 		if (argv[i] == '\\' && (in_quote && qchar == '\''))
 			len++;

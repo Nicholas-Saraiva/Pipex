@@ -12,9 +12,11 @@
 
 #include "pipex.h"
 
-static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2]);
+static pid_t	reciver_fork(char *argv, char **env,
+					int pfd[2], int fd_file[2]);
 static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2]);
 static void		fill_var(int *fd_file, int *pfd, int *pid_cmds);
+static void		free_exit(char **args, char *cmd, int to_exit);
 
 int	main(int argc, char *argv[], char *env[])
 {
@@ -22,7 +24,7 @@ int	main(int argc, char *argv[], char *env[])
 	int	pfd[2];
 	int	pid_cmds[2];
 	int	status;
-	
+
 	status = 0;
 	fill_var(fd_file, pfd, pid_cmds);
 	if (argc == 1)
@@ -51,69 +53,63 @@ static void	fill_var(int *fd_file, int *pfd, int *pid_cmds)
 	pfd[1] = 0;
 }
 
-void	free_dep(char **args, char *cmd)
+static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
+{
+	char	*cmd;
+	char	**args;
+	pid_t	pid;
+
+	if (!*argv)
+		return (-1);
+	if (!init_pid(&pid))
+		return (0);
+	if (pid == 0)
+	{
+		args = get_command(argv);
+		cmd = get_command_path(args[0], env);
+		if (!cmd)
+			cmd_not_found(args, env, args[0]);
+		dup2(pfd[1], STDOUT_FILENO);
+		if (dup2(fd_file[0], STDIN_FILENO) == -1)
+			free_exit(args, cmd, 1);
+		closing_fds(pfd, fd_file);
+		execve(cmd, args, env);
+	}
+	return (pid);
+}
+
+static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
+{
+	char	*cmd;
+	char	**args;
+	pid_t	pid;
+
+	if (!*argv)
+		return (-1);
+	if (!init_pid(&pid))
+		return (0);
+	if (pid == 0)
+	{
+		args = get_command(argv);
+		cmd = get_command_path(args[0], env);
+		if (!cmd)
+			cmd_not_found(args, env, args[0]);
+		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
+			free_exit(args, cmd, 1);
+		if (dup2(pfd[0], STDIN_FILENO) == -1)
+			free_exit(args, cmd, 1);
+		closing_fds(pfd, fd_file);
+		execve(cmd, args, env);
+	}
+	return (pid);
+}
+
+static void	free_exit(char **args, char *cmd, int to_exit)
 {
 	if (args)
 		ft_free_all(args);
 	if (cmd)
 		free(cmd);
-}
-
-void	free_cmds(char **args, char **env, char *cmd)
-{
-	free_dep(args, cmd);
-	exit(1);
-}
-
-static pid_t giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
-{
-	char	*cmd;
-	char	**args;
-	pid_t	pid;
-
-	if (!*argv)
-		return (-1);
-	if (!init_pid(&pid))
-		return (0);
-	args = get_command(argv);
-	cmd = get_command_path(args[0], env);
-	if (pid == 0)
-	{
-		if (!cmd)
-			cmd_not_found(args, env, args[0]);
-		dup2(pfd[1], STDOUT_FILENO);
-		if (dup2(fd_file[0], STDIN_FILENO) == -1)
-			free_cmds(args, env, cmd);
-		closing_fds(pfd, fd_file);
-		execve(cmd, args, env);
-	}
-	free_dep(args, cmd);
-	return (pid);
-}
-
-static pid_t reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
-{
-	char	*cmd;
-	char	**args;
-	pid_t	pid;
-
-	if (!*argv)
-		return (-1);
-	if (!init_pid(&pid))
-		return (0);
-	args = get_command(argv);
-	cmd = get_command_path(args[0], env);
-	if (pid == 0)
-	{
-		if (!cmd)
-			cmd_not_found(args, env, args[0]);
-		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
-			free_cmds(args, env, cmd);
-		if (dup2(pfd[0], STDIN_FILENO) == -1)
-			free_cmds(args, env, cmd);
-		closing_fds(pfd, fd_file);
-		execve(cmd, args, env);
-	}
-	free_dep(args, cmd);
-	return (pid);
+	if (to_exit)
+		exit(1);
 }

@@ -10,25 +10,25 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef PIPEX_H
-#define PIPEX_H
-#include <unistd.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include "ft_printf.h"
-#include "libft.h"
+#ifndef PIPEX_H
+# define PIPEX_H
+# include <unistd.h>
+# include <stdio.h>
+# include <fcntl.h>
+# include <sys/wait.h>
+# include "ft_printf.h"
+# include "libft.h"
 
 //---Utils
 void	ft_free_all(char **str);
-void	ft_error(char *str);
-void    closing_fds(int fd[2], int fd_file[2]);
-int 	init_pid(pid_t *pid);
+void	closing_fds(int fd[2], int fd_file[2]);
+int		init_pid(pid_t *pid);
 int		check_in_quote(char s, int *in_quote, char *qchar);
 int		is_space(unsigned char c);
 
 //---Getters
-void	get_fd_file(int fd_file[2], char *read_file, char *write_file, char **env);
+void	get_fd_file(int fd_file[2], char *read_file,
+			char *write_file, char **env);
 char	**get_paths(char **env);
 char	**get_command(char *argv);
 char	*get_command_path(char *arg, char **env);
@@ -38,6 +38,6 @@ char	*get_shell(char **env);
 void	cmd_not_found(char **args, char **env, char *cmd);
 
 //---CountWords
-int 	count_words(char *s);
+int		count_words(char *s);
 
 #endif

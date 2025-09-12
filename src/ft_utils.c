@@ -24,29 +24,23 @@ void	ft_free_all(char **str)
 	free(str);
 }
 
-void	ft_error(char *str)
+void	closing_fds(int fd[2], int fd_file[2])
 {
-	ft_putstr_fd(str, 2);
-	exit(1);
+	close(fd[1]);
+	close(fd[0]);
+	close(fd_file[1]);
+	close(fd_file[0]);
 }
 
-void    closing_fds(int fd[2], int fd_file[2])
+int	init_pid(pid_t *pid)
 {
-        close(fd[1]);
-        close(fd[0]);
-        close(fd_file[1]);
-        close(fd_file[0]);
-}
-
-int init_pid(pid_t *pid)
-{
-    *pid = fork();
-    if (*pid == -1)
-    {
-        perror("fork");
-        return (0);
-    }
-    return (1);
+	*pid = fork();
+	if (*pid == -1)
+	{
+		perror("fork");
+		return (0);
+	}
+	return (1);
 }
 
 int	check_in_quote(char s, int *in_quote, char *qchar)
@@ -68,7 +62,8 @@ int	check_in_quote(char s, int *in_quote, char *qchar)
 	return (0);
 }
 
-int is_space(unsigned char c)
+int	is_space(unsigned char c)
 {
-	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f');
+	return (c == ' ' || c == '\t' || c == '\n' || c
+		== '\r' || c == '\v' || c == '\f');
 }
