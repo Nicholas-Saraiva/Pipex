@@ -36,6 +36,7 @@ char	*get_shell(char **env);
 
 //---Errors
 void	cmd_not_found(char **args, char **env, char *cmd);
+void	argv_empty(char **env, char *cmd);
 
 //---CountWords
 int		count_words(char *s);

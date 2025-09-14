@@ -30,8 +30,6 @@ char	**get_command(char *argv)
 		return (ft_split(argv, ' '));
 	words = count_words(argv);
 	args = ft_calloc(words + 1, sizeof(char *));
-	if (!args)
-		return (NULL);
 	if (!create_cmd(argv, args, words, have_in_quote(argv)))
 	{
 		ft_free_all(args);

@@ -27,3 +27,16 @@ void	cmd_not_found(char **args, char **env, char *cmd)
 		ft_free_all(args);
 	exit(127);
 }
+
+void	argv_empty(char **env, char *cmd)
+{
+	char	*shell;
+
+	shell = get_shell(env);
+	ft_putstr_fd(shell, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd(": command not found\n\0", 2);
+	if (shell)
+		free(shell);
+}

@@ -36,8 +36,7 @@ int	main(int argc, char *argv[], char *env[])
 		return (1);
 	pid_cmds[0] = giver_fork(argv[2], env, pfd, fd_file);
 	pid_cmds[1] = reciver_fork(argv[3], env, pfd, fd_file);
-	close(pfd[0]);
-	close(pfd[1]);
+	closing_fds(pfd, fd_file);
 	waitpid(pid_cmds[0], NULL, 0);
 	waitpid(pid_cmds[1], &status, 0);
 	return (WEXITSTATUS(status));
@@ -60,7 +59,7 @@ static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	pid_t	pid;
 
 	if (!*argv)
-		return (-1);
+		return (argv_empty(env, argv), -1);
 	if (!init_pid(&pid))
 		return (0);
 	if (pid == 0)
