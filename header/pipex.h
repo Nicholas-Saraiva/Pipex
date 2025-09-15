@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:45:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/08 17:18:01 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/15 18:26:01 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdio.h>
 # include <fcntl.h>
 # include <sys/wait.h>
+# include "get_next_line.h"
 # include "ft_printf.h"
 # include "libft.h"
 

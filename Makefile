@@ -6,7 +6,7 @@
 #    By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 12:39:58 by nsaraiva          #+#    #+#              #
-#    Updated: 2025/09/15 17:08:04 by nsaraiva         ###   ########.fr        #
+#    Updated: 2025/09/15 18:27:39 by nsaraiva         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ OBJ_BONUS = $(SRC_BONUS:.c=.o)
 
 LIBFT = includes/libft 
 PRINTF = includes/ft_printf
+GNL = includes/get_next_line
 
 CC = cc
 CCFLAGS = -Wall -Wextra -Werror -Iheader -g
@@ -41,7 +42,7 @@ $(NAME): $(OBJ)
 $(BONUS): $(OBJ_BONUS)
 	$(MAKE) -C $(LIBFT) all
 	$(MAKE) -C $(PRINTF) all
-	$(CC) -Iheader -g $(OBJ_BONUS) $(LIBRARIES) -o $(BONUS)
+	$(CC) -Iheader -g $(OBJ_BONUS) $(LIBRARIES) -L$(GNL) -lget -o $(BONUS)
 
 %.o: %.c
 	$(CC) -Iheader -g -c $< -o $@

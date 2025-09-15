@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/15 16:54:08 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/15 18:45:36 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,28 @@ int	main(int argc, char *argv[], char *envp[])
 		free_all_int(env.pfd);
 	return (pid_status(argc, env.pid));
 }
+
+void	here_doc(char *limiter, t_env env, int fd_out[2])
+{
+	int		*str;
+	pid_t	pid;
+	
+	str = NULL;
+	if (!init_pid(&pid))
+		free_exit(NULL, NULL, 1, env);
+	if (pid == 0)
+	{
+		if (dup2(fd_out[1], STDIN_FILENO) == -1)
+			free_exit(NULL, NULL, 1, env);
+		closing_fds(fd_out, NULL);
+		while (get_next_line(0, &str))
+		{
+			ft_printf(str);
+		}
+	}
+}
+
+int		find_word()
 
 static pid_t	g_fork(char *argv, t_env env, int fd_out[2], int fd_in[2])
 {
