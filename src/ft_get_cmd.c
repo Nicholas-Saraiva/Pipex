@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 14:29:34 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/12 14:29:35 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:21:15 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,10 @@ static int	size_next_word(char *argv, int i)
 	qchar = 0;
 	if (check_in_quote(argv[i], &in_quote, &qchar))
 		i++;
-	while ((!in_quote && argv[i] != ' ') || (in_quote && argv[i]))
+	while (argv[i] && ((!in_quote && (argv[i] != ' ')
+			) || (in_quote && argv[i])))
 	{
-		if (check_in_quote(argv[i], &in_quote, &qchar))
+		if (qchar == argv[i] && check_in_quote(argv[i], &in_quote, &qchar))
 		{
 			i++;
 			continue ;

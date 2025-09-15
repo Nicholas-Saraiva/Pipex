@@ -6,7 +6,7 @@
 #    By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 12:39:58 by nsaraiva          #+#    #+#              #
-#    Updated: 2025/09/08 17:22:26 by nsaraiva         ###   ########.fr        #
+#    Updated: 2025/09/15 17:08:04 by nsaraiva         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,8 +28,10 @@ LIBRARIES = -L$(LIBFT) -lft -L$(PRINTF) -lftprintf
 NAME = pipex
 BONUS = pipex_bonus
 
-all: $(BONUS)
-bonus: $(NAME)
+# all: $(BONUS)
+# bonus: $(NAME)
+all: $(NAME)
+bonus: $(BONUS)
 
 $(NAME): $(OBJ)
 	$(MAKE) -C $(LIBFT) all

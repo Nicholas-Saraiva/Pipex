@@ -6,29 +6,44 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:48:18 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/08 18:17:06 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/15 17:10:25 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+static void	message_error(char	*str, char *file, char **env);
 
 void	get_fd_file(int fd_file[2], char *read_file,
 			char *write_file, char **env)
 {
 	char	*shell;
 
-	fd_file[0] = open(read_file, O_RDONLY);
-	fd_file[1] = open(write_file, O_WRONLY | O_CREAT | O_TRUNC, 0671);
-	if (fd_file[0] == -1)
+	if (access(read_file, F_OK) != 0)
+		message_error(": no such file or directory: ", read_file, env);
+	else
 	{
-		shell = get_shell(env);
-		ft_putstr_fd(shell, 2);
-		ft_putstr_fd(": no such file or directory: ", 2);
-		ft_putstr_fd(read_file, 2);
-		ft_putstr_fd("\n\0", 2);
-		if (shell)
-			free(shell);
+		fd_file[0] = open(read_file, O_RDONLY);
+		if (fd_file[0] == -1)
+			message_error(": permission denied: ", read_file, env);
 	}
+	fd_file[1] = open(write_file, O_WRONLY | O_CREAT | O_TRUNC, 0671);
+	if (fd_file[1] == -1)
+		message_error(": permission denied: ", write_file, env);
+}
+
+static
+void	message_error(char	*str, char *file, char **env)
+{
+	char	*shell;
+
+	shell = get_shell(env);
+	ft_putstr_fd(shell, 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd(file, 2);
+	ft_putstr_fd("\n\0", 2);
+	if (shell)
+		free(shell);
 }
 
 char	*get_shell(char **env)
@@ -43,7 +58,7 @@ char	*get_shell(char **env)
 		if (ft_strncmp(env[i], "SHELL=", 6) == 0)
 			break ;
 	}
-	str = ft_split(*env, '/');
+	str = ft_split(*(env + i), '/');
 	i = -1;
 	while (str[++i])
 		;
@@ -78,8 +93,6 @@ char	*get_command_path(char *arg, char **env)
 	i = -1;
 	if (!arg)
 		return (0);
-	if (access(arg, X_OK) == 0)
-		return (ft_strdup(arg));
 	paths = get_paths(env);
 	while (paths[++i])
 	{

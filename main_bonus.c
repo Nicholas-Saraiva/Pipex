@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/12 19:55:55 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:54:08 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static pid_t	g_fork(char *argv, t_env env, int fd_out[2], int fd_in[2])
 	pid_t	pid;
 
 	if (!*argv)
-		return (argv_empty(env.envp, argv), -1);
+		return (-1);
 	if (!init_pid(&pid))
 		free_exit(args, cmd_path, 1, env);
 	if (pid == 0)

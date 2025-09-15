@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/11 16:35:58 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/15 16:53:47 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	pid_t	pid;
 
 	if (!*argv)
-		return (argv_empty(env, argv), -1);
+		return (-1);
 	if (!init_pid(&pid))
 		return (0);
 	if (pid == 0)
@@ -72,7 +72,8 @@ static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 		if (dup2(fd_file[0], STDIN_FILENO) == -1)
 			free_exit(args, cmd, 1);
 		closing_fds(pfd, fd_file);
-		execve(cmd, args, env);
+		if (execve(cmd, args, env) == -1)
+			free_exit(args, cmd, 1);
 	}
 	return (pid);
 }
@@ -98,7 +99,8 @@ static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
 			free_exit(args, cmd, 1);
 		closing_fds(pfd, fd_file);
-		execve(cmd, args, env);
+		if (execve(cmd, args, env) == -1)
+			free_exit(args, cmd, 1);
 	}
 	return (pid);
 }
