@@ -6,13 +6,34 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 15:13:37 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/14 15:13:39 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/16 17:23:49 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
 void	free_all_int(int **matrix);
+
+void	get_fd_file_b(int fd_file[2], char **argv, int argc, t_env *env)
+{
+	if (!env->here_doc)
+	{
+		if (access(argv[1], F_OK) != 0)
+		{
+			fd_file[0] = -1;
+			message_error(": no such file or directory: ", argv[1], env->envp);
+		}
+		else
+		{
+			fd_file[0] = open(argv[1], O_RDONLY);
+			if (fd_file[0] == -1)
+				message_error(": permission denied: ", argv[1], env->envp);
+		}
+	}
+	fd_file[1] = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0671);
+	if (fd_file[1] == -1)
+		message_error(": permission denied: ", argv[argc - 1], env->envp);
+}
 
 int	**creating_pfds(int argc)
 {
@@ -47,6 +68,7 @@ void	fill_var(int *fd_file, t_env *env, int argc, char **envp)
 		exit(1);
 	env->pfd = creating_pfds(argc);
 	env->envp = envp;
+	env->n_cmds = argc - 3;
 }
 
 void	free_all_int(int **matrix)
@@ -54,29 +76,30 @@ void	free_all_int(int **matrix)
 	int	i;
 
 	i = -1;
-	while (matrix[++i])
+	while (matrix[++i] && matrix[i])
 		free(matrix[i]);
-	free(matrix);
+	if (matrix)
+		free(matrix);
 }
 
-void	free_exit(char **args, char *cmd, int to_exit, t_env env)
+void	free_exit(char **args, char *cmd, int to_exit, t_env *env)
 {
 	if (args)
 		ft_free_all(args);
 	if (cmd)
 		free(cmd);
-	free_all_int(env.pfd);
-	if (env.pid)
-		free(env.pid);
+	free_all_int(env->pfd);
+	if (env->pid)
+		free(env->pid);
 	if (to_exit)
 		exit(1);
 }
 
-void	cmd_not_found_bonus(char **args, t_env env, char *cmd)
+void	cmd_not_found_bonus(char **args, t_env *env, char *cmd)
 {
 	char	*shell;
 
-	shell = get_shell(env.envp);
+	shell = get_shell(env->envp);
 	ft_putstr_fd(shell, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(cmd, 2);
@@ -85,9 +108,9 @@ void	cmd_not_found_bonus(char **args, t_env env, char *cmd)
 		free(shell);
 	if (args)
 		ft_free_all(args);
-	if (env.pfd)
-		free_all_int(env.pfd);
-	if (env.pid)
-		free(env.pid);
+	if (env->pfd)
+		free_all_int(env->pfd);
+	if (env->pid)
+		free(env->pid);
 	exit(127);
 }

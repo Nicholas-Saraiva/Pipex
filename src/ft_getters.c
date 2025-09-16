@@ -6,21 +6,22 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:48:18 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/15 17:10:25 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/16 16:39:01 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static void	message_error(char	*str, char *file, char **env);
+void	message_error(char	*str, char *file, char **env);
 
 void	get_fd_file(int fd_file[2], char *read_file,
 			char *write_file, char **env)
 {
-	char	*shell;
-
 	if (access(read_file, F_OK) != 0)
+	{
+		fd_file[0] = -1;
 		message_error(": no such file or directory: ", read_file, env);
+	}
 	else
 	{
 		fd_file[0] = open(read_file, O_RDONLY);
@@ -32,7 +33,6 @@ void	get_fd_file(int fd_file[2], char *read_file,
 		message_error(": permission denied: ", write_file, env);
 }
 
-static
 void	message_error(char	*str, char *file, char **env)
 {
 	char	*shell;

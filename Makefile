@@ -6,7 +6,7 @@
 #    By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 12:39:58 by nsaraiva          #+#    #+#              #
-#    Updated: 2025/09/15 18:27:39 by nsaraiva         ###   ########.fr        #
+#    Updated: 2025/09/16 16:39:31 by nsaraiva         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ OBJ = $(SRC:.c=.o)
 
 SRC_BONUS = main_bonus.c
 SRC_BONUS += src/ft_utils.c src/ft_getters.c src/ft_errors.c src/ft_count_words.c src/ft_get_cmd.c
-SRC_BONUS += src_bonus/ft_utils_bonus.c
+SRC_BONUS += src_bonus/ft_utils_bonus.c src_bonus/ft_here_doc.c
 OBJ_BONUS = $(SRC_BONUS:.c=.o)
 
 LIBFT = includes/libft 
@@ -27,7 +27,7 @@ CC = cc
 CCFLAGS = -Wall -Wextra -Werror -Iheader -g
 LIBRARIES = -L$(LIBFT) -lft -L$(PRINTF) -lftprintf
 NAME = pipex
-BONUS = pipex_bonus
+BONUS = pipex
 
 # all: $(BONUS)
 # bonus: $(NAME)
@@ -42,6 +42,7 @@ $(NAME): $(OBJ)
 $(BONUS): $(OBJ_BONUS)
 	$(MAKE) -C $(LIBFT) all
 	$(MAKE) -C $(PRINTF) all
+	$(MAKE) -C $(GNL) all
 	$(CC) -Iheader -g $(OBJ_BONUS) $(LIBRARIES) -L$(GNL) -lget -o $(BONUS)
 
 %.o: %.c

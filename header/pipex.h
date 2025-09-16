@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:45:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/15 18:26:01 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/16 16:39:12 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	closing_fds(int fd[2], int fd_file[2]);
 int		init_pid(pid_t *pid);
 int		check_in_quote(char s, int *in_quote, char *qchar);
 int		is_space(unsigned char c);
+void	message_error(char	*str, char *file, char **env);
 
 //---Getters
 void	get_fd_file(int fd_file[2], char *read_file,
