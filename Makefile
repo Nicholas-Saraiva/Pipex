@@ -6,7 +6,7 @@
 #    By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 12:39:58 by nsaraiva          #+#    #+#              #
-#    Updated: 2025/09/16 16:39:31 by nsaraiva         ###   ########.fr        #
+#    Updated: 2025/09/16 22:36:56 by nsaraiva         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ CC = cc
 CCFLAGS = -Wall -Wextra -Werror -Iheader -g
 LIBRARIES = -L$(LIBFT) -lft -L$(PRINTF) -lftprintf
 NAME = pipex
-BONUS = pipex
+BONUS = pipex_bonus
 
 # all: $(BONUS)
 # bonus: $(NAME)

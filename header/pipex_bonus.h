@@ -35,4 +35,6 @@ int		check_here_doc(t_env *env, char **argv, int *i);
 void	print_here_doc(t_env env);
 void	here_doc(char *limiter, t_env *env, int fd_out[2]);
 
+void	safe_close(int *fd);
+
 #endif

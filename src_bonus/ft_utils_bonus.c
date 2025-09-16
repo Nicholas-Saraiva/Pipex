@@ -16,23 +16,27 @@ void	free_all_int(int **matrix);
 
 void	get_fd_file_b(int fd_file[2], char **argv, int argc, t_env *env)
 {
+	fd_file[0] = -1;
 	if (!env->here_doc)
 	{
 		if (access(argv[1], F_OK) != 0)
-		{
-			fd_file[0] = -1;
 			message_error(": no such file or directory: ", argv[1], env->envp);
-		}
 		else
 		{
 			fd_file[0] = open(argv[1], O_RDONLY);
 			if (fd_file[0] == -1)
 				message_error(": permission denied: ", argv[1], env->envp);
 		}
+		fd_file[1] = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0671);
+		if (fd_file[1] == -1)
+			message_error(": permission denied: ", argv[argc - 1], env->envp);
 	}
-	fd_file[1] = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0671);
-	if (fd_file[1] == -1)
-		message_error(": permission denied: ", argv[argc - 1], env->envp);
+	else
+	{
+		fd_file[1] = open(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0671);
+		if (fd_file[1] == -1)
+			message_error(": permission denied: ", argv[argc - 1], env->envp);
+	}
 }
 
 int	**creating_pfds(int argc)

@@ -43,4 +43,6 @@ void	argv_empty(char **env, char *cmd);
 //---CountWords
 int		count_words(char *s);
 
+void	safe_close(int *fd);
+
 #endif

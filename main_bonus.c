@@ -23,22 +23,20 @@ int	main(int argc, char *argv[], char *envp[])
 	t_env	env;
 	int		fd_file[2];
 	int		i;
-	int		j;
 
 	if (argc < 5)
 		exit(2);
 	fill_var(fd_file, &env, argc, envp);
 	check_here_doc(&env, argv, &i);
 	get_fd_file_b(fd_file, argv, argc, &env);
-	j = -1;
-	while (env.n_cmds - ++i > 0 && ++j >= 0)
+	while (env.n_cmds - ++i > 0)
 	{
 		if (i == 0)
-			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[j], fd_file);
+			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[i], fd_file);
 		else if (i == argc - 4)
-			env.pid[i] = r_fork(argv[i + 2], &env, env.pfd[j - 1], fd_file);
+			env.pid[i] = r_fork(argv[i + 2], &env, env.pfd[i - 1], fd_file);
 		else
-			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[j], env.pfd[j - 1]);
+			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[i], env.pfd[i - 1]);
 		closing_pfd(i, argc, &env, fd_file);
 	}
 	return (pid_status(argc, &env));
@@ -101,16 +99,16 @@ static pid_t	r_fork(char *argv, t_env *env, int pfd[2], int fd_file[2])
 static void	closing_pfd(int i, int argc, t_env *env, int fd_file[2])
 {
 	if (i != env->n_cmds - 1)
-		close(env->pfd[i][1]);
+		safe_close(&env->pfd[i][1]);
 	if (i == 0)
-		close(fd_file[0]);
+		safe_close(&fd_file[0]);
 	else if (i == env->n_cmds - 1)
 	{
-		close(env->pfd[i - 1][0]);
-		close(fd_file[1]);
+		safe_close(&env->pfd[i - 1][0]);
+		safe_close(&fd_file[1]);
 	}
 	else
-		close(env->pfd[i - 1][0]);
+		safe_close(&env->pfd[i - 1][0]);
 }
 
 static int	pid_status(int argc, t_env *env)
