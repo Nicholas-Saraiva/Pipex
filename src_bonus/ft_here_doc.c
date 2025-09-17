@@ -6,12 +6,12 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/16 16:26:07 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/16 17:22:12 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:04:59 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "pipex_bonus.h"
+
 static char	*strjoin(char **s1, char *s2);
 
 int	check_here_doc(t_env *env, char **argv, int *i)
@@ -60,13 +60,10 @@ void	here_doc(char *limiter, t_env *env, int fd_out[2])
 		print_here_doc(*env);
 	}
 	ft_putstr_fd(line, env->pfd[0][1]);
-	if (str)
-		free(str);
 	if (line)
 		free(line);
 	safe_close(&env->pfd[0][1]);
 }
-
 
 static char	*strjoin(char **s1, char *s2)
 {
@@ -75,7 +72,8 @@ static char	*strjoin(char **s1, char *s2)
 
 	new_s = NULL;
 	i = 0;
-	new_s = (char *) malloc((ft_strlen(*s1) + ft_strlen(s2) + 1) * sizeof(char));
+	new_s = (char *) malloc((ft_strlen(*s1)
+				+ ft_strlen(s2) + 1) * sizeof(char));
 	if (!new_s)
 		return (0);
 	while (*s1 && (*s1)[i])

@@ -28,13 +28,18 @@ int		**creating_pfds(int argc);
 void	free_all_int(int **matrix);
 void	free_exit(char **args, char *cmd, int to_exit, t_env *env);
 void	fill_var(int *fd_file, t_env *env, int argc, char **envp);
-void	cmd_not_found_bonus(char **args, t_env *env, char *cmd);
-void	get_fd_file_b(int fd_file[2], char **argv, int argc, t_env *env);
 
+//--ft_here_doc
 int		check_here_doc(t_env *env, char **argv, int *i);
 void	print_here_doc(t_env env);
 void	here_doc(char *limiter, t_env *env, int fd_out[2]);
 
 void	safe_close(int *fd);
+
+//---Get_fd_file_b
+void	get_fd_file_b(int fd_file[2], char **argv, int argc, t_env *env);
+
+//---cmd_not_found_bonus
+void	cmd_not_found_bonus(char **args, t_env *env, char *cmd);
 
 #endif

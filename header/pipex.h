@@ -22,11 +22,10 @@
 
 //---Utils
 void	ft_free_all(char **str);
-void	closing_fds(int fd[2], int fd_file[2]);
 int		init_pid(pid_t *pid);
 int		check_in_quote(char s, int *in_quote, char *qchar);
 int		is_space(unsigned char c);
-void	message_error(char	*str, char *file, char **env);
+void	message_error(char	*str, char *file, char **env, int type);
 
 //---Getters
 void	get_fd_file(int fd_file[2], char *read_file,
@@ -38,11 +37,13 @@ char	*get_shell(char **env);
 
 //---Errors
 void	cmd_not_found(char **args, char **env, char *cmd);
-void	argv_empty(char **env, char *cmd);
+void	safe_close(int *fd);
+void	closing_fds(int fd[2], int fd_file[2]);
 
 //---CountWords
 int		count_words(char *s);
 
-void	safe_close(int *fd);
+//---self_strjoin
+char	*self_strjoin(char **s1, char *s2);
 
 #endif

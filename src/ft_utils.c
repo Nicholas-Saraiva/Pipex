@@ -24,23 +24,6 @@ void	ft_free_all(char **str)
 	free(str);
 }
 
-void	safe_close(int *fd)
-{
-	if (*fd != -1)
-	{
-		close(*fd);
-		*fd = -1;
-	}
-}
-
-void	closing_fds(int fd[2], int fd_file[2])
-{
-	safe_close(&fd[1]);
-	safe_close(&fd[0]);
-	safe_close(&fd_file[1]);
-	safe_close(&fd_file[0]);
-}
-
 int	init_pid(pid_t *pid)
 {
 	*pid = fork();
