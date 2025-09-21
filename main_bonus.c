@@ -24,7 +24,7 @@ int	main(int argc, char *argv[], char *envp[])
 	int		fd_file[2];
 	int		i;
 
-	if (argc < 5)
+	if (argc < 5 || !(*envp))
 		exit(2);
 	fill_var(fd_file, &env, argc, envp);
 	check_here_doc(&env, argv, &i);

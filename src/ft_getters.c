@@ -20,7 +20,7 @@ void	get_fd_file(int fd_file[2], char *read_file,
 	if (access(read_file, F_OK) != 0)
 	{
 		fd_file[0] = -1;
-		message_error(": no such file or directory: ", read_file, env, 1);
+		message_error(": no such file or directory: ", read_file, env, 0);
 	}
 	else
 	{

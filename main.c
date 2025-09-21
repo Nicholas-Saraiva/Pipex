@@ -26,11 +26,9 @@ int	main(int argc, char *argv[], char *env[])
 	int	status;
 
 	status = 0;
-	fill_var(fd_file, pfd, pid_cmds);
-	if (argc == 1)
+	if (argc < 5 || !(*env))
 		return (2);
-	if (argc < 5)
-		return (1);
+	fill_var(fd_file, pfd, pid_cmds);
 	get_fd_file(fd_file, argv[1], argv[4], env);
 	if (pipe(pfd) == -1)
 		return (1);
@@ -62,10 +60,10 @@ static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 		return (-1);
 	if (!init_pid(&pid))
 		return (0);
+	args = get_command(argv);
+	cmd = get_command_path(args[0], env);	
 	if (pid == 0)
 	{
-		args = get_command(argv);
-		cmd = get_command_path(args[0], env);
 		if (!cmd)
 			cmd_not_found(args, env, args[0]);
 		dup2(pfd[1], STDOUT_FILENO);
@@ -75,7 +73,7 @@ static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 		if (execve(cmd, args, env) == -1)
 			free_exit(args, cmd, 1);
 	}
-	return (pid);
+	return (free_exit(args, cmd, 0), pid);
 }
 
 static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
@@ -88,10 +86,10 @@ static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 		return (-1);
 	if (!init_pid(&pid))
 		return (0);
+	args = get_command(argv);
+	cmd = get_command_path(args[0], env);
 	if (pid == 0)
 	{
-		args = get_command(argv);
-		cmd = get_command_path(args[0], env);
 		if (!cmd)
 			cmd_not_found(args, env, args[0]);
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
@@ -102,7 +100,7 @@ static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 		if (execve(cmd, args, env) == -1)
 			free_exit(args, cmd, 1);
 	}
-	return (pid);
+	return (free_exit(args, cmd, 0), pid);
 }
 
 static void	free_exit(char **args, char *cmd, int to_exit)

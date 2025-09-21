@@ -28,23 +28,24 @@ CC = cc
 CCFLAGS = -Wall -Wextra -Werror -Iheader -g
 LIBRARIES = -L$(LIBFT) -lft -L$(PRINTF) -lftprintf
 NAME = pipex
-BONUS = pipex_bonus
+BONUS = .bonus
 
-# all: $(BONUS)
-# bonus: $(NAME)
 all: $(NAME)
 bonus: $(BONUS)
 
 $(NAME): $(OBJ)
 	$(MAKE) -C $(LIBFT) all
 	$(MAKE) -C $(PRINTF) all
+	rm -rf .bonus
 	$(CC) -Iheader -g $(OBJ) $(LIBRARIES) -o $(NAME)
 
 $(BONUS): $(OBJ_BONUS)
 	$(MAKE) -C $(LIBFT) all
 	$(MAKE) -C $(PRINTF) all
 	$(MAKE) -C $(GNL) all
-	$(CC) -Iheader -g $(OBJ_BONUS) $(LIBRARIES) -L$(GNL) -lget -o $(BONUS)
+	touch .bonus
+	rm -rf main.o
+	$(CC) -Iheader -g $(OBJ_BONUS) $(LIBRARIES) -L$(GNL) -lget -o $(NAME)
 
 %.o: %.c
 	$(CC) -Iheader -g -c $< -o $@
@@ -52,6 +53,7 @@ $(BONUS): $(OBJ_BONUS)
 clean:
 	rm -rf $(OBJ)
 	rm -rf $(OBJ_BONUS)
+	rm -rf .bonus
 	$(MAKE) -C $(LIBFT) clean
 	$(MAKE) -C $(PRINTF) clean
 
