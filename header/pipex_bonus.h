@@ -28,6 +28,7 @@ int		**creating_pfds(int argc);
 void	free_all_int(int **matrix);
 void	free_exit(char **args, char *cmd, int to_exit, t_env *env);
 void	fill_var(int *fd_file, t_env *env, int argc, char **envp);
+void	ft_safe_free(char *a);
 
 //--ft_here_doc
 int		check_here_doc(t_env *env, char **argv, int *i);

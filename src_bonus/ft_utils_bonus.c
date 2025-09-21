@@ -67,9 +67,18 @@ void	free_exit(char **args, char *cmd, int to_exit, t_env *env)
 		ft_free_all(args);
 	if (cmd)
 		free(cmd);
-	free_all_int(env->pfd);
-	if (env->pid)
-		free(env->pid);
+	if (env)
+	{
+		free_all_int(env->pfd);
+		if (env->pid)
+			free(env->pid);
+	}
 	if (to_exit)
 		exit(1);
+}
+
+void	ft_safe_free(char *a)
+{
+	if (a)
+		free(a);
 }

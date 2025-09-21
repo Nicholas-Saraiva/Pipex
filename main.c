@@ -56,16 +56,14 @@ static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	char	**args;
 	pid_t	pid;
 
-	if (!*argv)
-		return (-1);
 	if (!init_pid(&pid))
 		return (0);
 	args = get_command(argv);
-	cmd = get_command_path(args[0], env);	
+	cmd = get_command_path(args, env);
 	if (pid == 0)
 	{
-		if (!cmd)
-			cmd_not_found(args, env, args[0]);
+		if (!cmd || !(*args))
+			cmd_not_found(args, env, argv);
 		dup2(pfd[1], STDOUT_FILENO);
 		if (dup2(fd_file[0], STDIN_FILENO) == -1)
 			free_exit(args, cmd, 1);
@@ -82,16 +80,14 @@ static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	char	**args;
 	pid_t	pid;
 
-	if (!*argv)
-		return (-1);
 	if (!init_pid(&pid))
 		return (0);
 	args = get_command(argv);
-	cmd = get_command_path(args[0], env);
+	cmd = get_command_path(args, env);
 	if (pid == 0)
 	{
-		if (!cmd)
-			cmd_not_found(args, env, args[0]);
+		if (!cmd || !(*args))
+			cmd_not_found(args, env, argv);
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
 			free_exit(args, cmd, 1);
 		if (dup2(pfd[0], STDIN_FILENO) == -1)

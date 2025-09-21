@@ -48,16 +48,14 @@ static pid_t	g_fork(char *argv, t_env *env, int fd_out[2], int fd_in[2])
 	char	**args;
 	pid_t	pid;
 
-	if (!*argv)
-		return (-1);
+	args = get_command(argv);
+	cmd_path = get_command_path(args, env->envp);
 	if (!init_pid(&pid))
 		free_exit(args, cmd_path, 1, env);
 	if (pid == 0)
 	{
-		args = get_command(argv);
-		cmd_path = get_command_path(args[0], env->envp);
-		if (!*argv || !cmd_path)
-			cmd_not_found_bonus(args, env, args[0]);
+		if (!cmd_path || !(*args))
+			cmd_not_found_bonus(args, env, argv);
 		if (dup2(fd_in[0], STDIN_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
 		if (dup2(fd_out[1], STDOUT_FILENO) == -1)
@@ -66,7 +64,7 @@ static pid_t	g_fork(char *argv, t_env *env, int fd_out[2], int fd_in[2])
 		if (execve(cmd_path, args, env->envp) == -1)
 			free_exit(args, cmd_path, 1, env);
 	}
-	return (pid);
+	return (free_exit(args, cmd_path, 0, NULL), pid);
 }
 
 static pid_t	r_fork(char *argv, t_env *env, int pfd[2], int fd_file[2])
@@ -75,16 +73,14 @@ static pid_t	r_fork(char *argv, t_env *env, int pfd[2], int fd_file[2])
 	char	**args;
 	pid_t	pid;
 
-	if (!*argv)
-		return (-1);
+	args = get_command(argv);
+	cmd_path = get_command_path(args, env->envp);
 	if (!init_pid(&pid))
 		free_exit(args, cmd_path, 1, env);
 	if (pid == 0)
 	{
-		args = get_command(argv);
-		cmd_path = get_command_path(args[0], env->envp);
-		if (!cmd_path)
-			cmd_not_found_bonus(args, env, args[0]);
+		if (!cmd_path || !(*args))
+			cmd_not_found_bonus(args, env, argv);
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
@@ -93,7 +89,7 @@ static pid_t	r_fork(char *argv, t_env *env, int pfd[2], int fd_file[2])
 		if (execve(cmd_path, args, env->envp) == -1)
 			free_exit(args, cmd_path, 1, env);
 	}
-	return (pid);
+	return (free_exit(args, cmd_path, 0, NULL), pid);
 }
 
 static void	closing_pfd(int i, int argc, t_env *env, int fd_file[2])

@@ -12,7 +12,7 @@
 
 #include "pipex_bonus.h"
 
-static char	*strjoin(char **s1, char *s2);
+static char	*my_strjoin(char **s1, char *s2);
 
 int	check_here_doc(t_env *env, char **argv, int *i)
 {
@@ -38,34 +38,41 @@ void	print_here_doc(t_env env)
 	ft_printf("heredock> ");
 }
 
-void	here_doc(char *limiter, t_env *env, int fd_out[2])
+void	make_lim(char **new_lim, char *lim, t_env *env)
+{
+	*new_lim = NULL;
+	*new_lim = ft_strjoin(lim, "\n");
+	if (!(*new_lim))
+		free_exit(NULL, NULL, 1, env);
+}
+
+void	here_doc(char *lim, t_env *env, int fd_out[2])
 {
 	char	*str;
 	char	*line;
+	char	*new_lim;
 
 	str = NULL;
 	line = NULL;
+	make_lim(&new_lim, lim, env);
 	print_here_doc(*env);
-	while (get_next_line(0, &str))
+	while (get_next_line(0, &str) && ft_strncmp(str, new_lim, ft_max(
+				ft_strlen(str), ft_strlen(new_lim))) != 0)
 	{
-		if (ft_strncmp(str, limiter, ft_strlen(str) - 1) == 0)
-		{
-			free(str);
-			break ;
-		}
-		line = strjoin(&line, str);
+		line = my_strjoin(&line, str);
 		if (!line)
 			free_exit(NULL, str, 1, env);
 		free(str);
 		print_here_doc(*env);
 	}
 	ft_putstr_fd(line, env->pfd[0][1]);
-	if (line)
-		free(line);
+	ft_safe_free(str);
+	ft_safe_free(line);
+	ft_safe_free(new_lim);
 	safe_close(&env->pfd[0][1]);
 }
 
-static char	*strjoin(char **s1, char *s2)
+static char	*my_strjoin(char **s1, char *s2)
 {
 	int		i;
 	char	*new_s;

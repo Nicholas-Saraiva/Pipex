@@ -32,7 +32,7 @@ void	get_fd_file(int fd_file[2], char *read_file,
 			char *write_file, char **env);
 char	**get_paths(char **env);
 char	**get_command(char *argv);
-char	*get_command_path(char *arg, char **env);
+char	*get_command_path(char **arg, char **env);
 char	*get_shell(char **env);
 
 //---Errors
@@ -42,8 +42,5 @@ void	closing_fds(int fd[2], int fd_file[2]);
 
 //---CountWords
 int		count_words(char *s);
-
-//---self_strjoin
-char	*self_strjoin(char **s1, char *s2);
 
 #endif

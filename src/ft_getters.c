@@ -92,7 +92,7 @@ char	**get_paths(char **env)
 	return (paths2);
 }
 
-char	*get_command_path(char *arg, char **env)
+char	*get_command_path(char **arg, char **env)
 {
 	int		i;
 	char	*tmp;
@@ -100,15 +100,15 @@ char	*get_command_path(char *arg, char **env)
 	char	**paths;
 
 	i = -1;
-	if (!arg)
+	if (!(*arg) || **arg == '\0')
 		return (0);
-	if (*arg == '/' && access(arg, X_OK) == 0)
-		return (arg);
+	if (**arg == '/' && access(*arg, X_OK) == 0)
+		return (*arg);
 	paths = get_paths(env);
 	while (paths[++i])
 	{
 		tmp = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(tmp, arg);
+		path = ft_strjoin(tmp, *arg);
 		free(tmp);
 		if (access(path, X_OK) == 0)
 			return (ft_free_all(paths), path);
