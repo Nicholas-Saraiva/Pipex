@@ -6,7 +6,7 @@
 #    By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/07 12:39:58 by nsaraiva          #+#    #+#              #
-#    Updated: 2025/09/17 22:26:49 by nsaraiva         ###   ########.fr        #
+#    Updated: 2025/09/22 15:34:44 by nsaraiva         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ OBJ = $(SRC:.c=.o)
 SRC_BONUS = main_bonus.c
 SRC_BONUS += src/ft_utils.c src/ft_getters.c src/ft_errors.c src/ft_count_words.c src/ft_get_cmd.c
 SRC_BONUS += src_bonus/ft_utils_bonus.c src_bonus/ft_here_doc.c
-SRC_BONUS += src_bonus/get_fd_file_b.c src_bonus/cmd_not_found.c
+SRC_BONUS += src_bonus/get_fd_file_b.c src_bonus/cmd_not_found.c src_bonus/ft_closing_all.c
 OBJ_BONUS = $(SRC_BONUS:.c=.o)
 
 LIBFT = includes/libft 

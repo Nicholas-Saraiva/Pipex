@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 15:13:37 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/17 12:03:08 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/22 16:20:24 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	free_all_int(int **matrix)
 	int	i;
 
 	i = -1;
-	while (matrix[++i] && matrix[i])
+	while (matrix && matrix[++i] && matrix[i])
 		free(matrix[i]);
 	if (matrix)
 		free(matrix);
@@ -69,6 +69,8 @@ void	free_exit(char **args, char *cmd, int to_exit, t_env *env)
 		free(cmd);
 	if (env)
 	{
+		if (!to_exit)
+			ft_closing_all(env->pfd);
 		free_all_int(env->pfd);
 		if (env->pid)
 			free(env->pid);

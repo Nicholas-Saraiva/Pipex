@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:48:18 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/17 12:32:09 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/22 16:36:02 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,14 @@ char	*get_shell(char **env)
 	int		i;
 
 	i = -1;
-	while (env[++i])
+	while (env && env[++i])
 	{
 		if (ft_strncmp(env[i], "SHELL=", 6) == 0)
 			break ;
 	}
 	str = ft_split(*(env + i), '/');
 	i = -1;
-	while (str[++i])
+	while (str && str[++i])
 		;
 	shell = ft_strdup(str[i - 1]);
 	ft_free_all(str);
@@ -83,13 +83,17 @@ char	**get_paths(char **env)
 	int		i;
 
 	i = -1;
-	while (env[++i])
+	while (env && env[++i])
 		if (ft_strncmp(env[i], "PATH=", 5) == 0)
 			break ;
-	paths = ft_split(env[i], '=');
-	paths2 = ft_split(paths[1], ':');
-	ft_free_all(paths);
-	return (paths2);
+	if (env && env[i])
+	{
+		paths = ft_split(env[i], '=');
+		paths2 = ft_split(paths[1], ':');
+		ft_free_all(paths);
+		return (paths2);
+	}
+	return (NULL);
 }
 
 char	*get_command_path(char **arg, char **env)
@@ -103,9 +107,9 @@ char	*get_command_path(char **arg, char **env)
 	if (!(*arg) || **arg == '\0')
 		return (0);
 	if (**arg == '/' && access(*arg, X_OK) == 0)
-		return (*arg);
+		return (ft_strdup(*arg));
 	paths = get_paths(env);
-	while (paths[++i])
+	while (paths && paths[++i])
 	{
 		tmp = ft_strjoin(paths[i], "/");
 		path = ft_strjoin(tmp, *arg);

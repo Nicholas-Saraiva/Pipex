@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/15 16:53:47 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/22 16:31:37 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static pid_t	reciver_fork(char *argv, char **env,
 					int pfd[2], int fd_file[2]);
 static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2]);
 static void		fill_var(int *fd_file, int *pfd, int *pid_cmds);
-static void		free_exit(char **args, char *cmd, int to_exit);
+static void		free_exit(char **args, char *cmd, int fd_in[2], int fd_out[2]);
 
 int	main(int argc, char *argv[], char *env[])
 {
@@ -56,22 +56,25 @@ static pid_t	giver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	char	**args;
 	pid_t	pid;
 
-	if (!init_pid(&pid))
-		return (0);
 	args = get_command(argv);
 	cmd = get_command_path(args, env);
+	if (!init_pid(&pid))
+		return (0);
 	if (pid == 0)
 	{
 		if (!cmd || !(*args))
+		{
+			closing_fds(pfd, fd_file);
 			cmd_not_found(args, env, argv);
+		}
 		dup2(pfd[1], STDOUT_FILENO);
 		if (dup2(fd_file[0], STDIN_FILENO) == -1)
-			free_exit(args, cmd, 1);
+			free_exit(args, cmd, pfd, fd_file);
 		closing_fds(pfd, fd_file);
 		if (execve(cmd, args, env) == -1)
-			free_exit(args, cmd, 1);
+			free_exit(args, cmd, pfd, fd_file);
 	}
-	return (free_exit(args, cmd, 0), pid);
+	return (free_exit(args, cmd, NULL, NULL), pid);
 }
 
 static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
@@ -80,31 +83,37 @@ static pid_t	reciver_fork(char *argv, char **env, int pfd[2], int fd_file[2])
 	char	**args;
 	pid_t	pid;
 
-	if (!init_pid(&pid))
-		return (0);
 	args = get_command(argv);
 	cmd = get_command_path(args, env);
+	if (!init_pid(&pid))
+		return (0);
 	if (pid == 0)
 	{
 		if (!cmd || !(*args))
+		{
+			closing_fds(pfd, fd_file);
 			cmd_not_found(args, env, argv);
+		}
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
-			free_exit(args, cmd, 1);
+			free_exit(args, cmd, pfd, fd_file);
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
-			free_exit(args, cmd, 1);
+			free_exit(args, cmd, pfd, fd_file);
 		closing_fds(pfd, fd_file);
 		if (execve(cmd, args, env) == -1)
-			free_exit(args, cmd, 1);
+			free_exit(args, cmd, pfd, fd_file);
 	}
-	return (free_exit(args, cmd, 0), pid);
+	return (free_exit(args, cmd, NULL, NULL), pid);
 }
 
-static void	free_exit(char **args, char *cmd, int to_exit)
+static void	free_exit(char **args, char *cmd, int fd_in[2], int fd_out[2])
 {
 	if (args)
 		ft_free_all(args);
 	if (cmd)
 		free(cmd);
-	if (to_exit)
+	if (fd_in)
+	{
+		closing_fds(fd_in, fd_out);
 		exit(1);
+	}
 }

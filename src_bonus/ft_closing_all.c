@@ -1,36 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_not_found.c                                    :+:      :+:    :+:   */
+/*   ft_closing_all.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/17 21:59:13 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/22 18:00:48 by nsaraiva         ###   ########.fr       */
+/*   Created: 2025/09/22 15:30:33 by nsaraiva          #+#    #+#             */
+/*   Updated: 2025/09/22 15:35:21 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void	cmd_not_found_bonus(char **args, t_env *env, char *cmd)
+void	ft_closing_all(int **pfd)
 {
-	char	*shell;
+	int	i;
 
-	shell = get_shell(env->envp);
-	ft_putstr_fd(shell, 2);
-	ft_putstr_fd(": ", 2);
-	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd(": command not found\n\0", 2);
-	if (shell)
-		free(shell);
-	if (args)
-		ft_free_all(args);
-	if (env)
+	i = -1;
+	while (pfd && pfd[++i])
 	{
-		ft_closing_all(env->pfd);
-		free_all_int(env->pfd);
-		if (env->pid)
-			free(env->pid);
+		safe_close(&pfd[i][0]);
+		safe_close(&pfd[i][1]);
 	}
-	exit(127);
 }

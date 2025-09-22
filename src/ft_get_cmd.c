@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/12 14:29:34 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/15 16:21:15 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/22 14:49:18 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ static int	have_in_quote(char *argv)
 	in_quote = 0;
 	has_quote = 0;
 	qchar = 0;
-	while (argv[++i])
+	while (argv && argv[++i])
 	{
 		if (check_in_quote(argv[i], &in_quote, &qchar))
 		{

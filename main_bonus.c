@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/16 17:30:45 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/22 18:30:18 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	main(int argc, char *argv[], char *envp[])
 	{
 		if (i == 0)
 			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[i], fd_file);
-		else if (i == argc - 4)
+		else if (i == env.n_cmds - 1)
 			env.pid[i] = r_fork(argv[i + 2], &env, env.pfd[i - 1], fd_file);
 		else
 			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[i], env.pfd[i - 1]);
@@ -55,7 +55,10 @@ static pid_t	g_fork(char *argv, t_env *env, int fd_out[2], int fd_in[2])
 	if (pid == 0)
 	{
 		if (!cmd_path || !(*args))
+		{
+			closing_fds(fd_out, fd_in);
 			cmd_not_found_bonus(args, env, argv);
+		}
 		if (dup2(fd_in[0], STDIN_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
 		if (dup2(fd_out[1], STDOUT_FILENO) == -1)
@@ -80,7 +83,10 @@ static pid_t	r_fork(char *argv, t_env *env, int pfd[2], int fd_file[2])
 	if (pid == 0)
 	{
 		if (!cmd_path || !(*args))
+		{
+			closing_fds(pfd, fd_file);
 			cmd_not_found_bonus(args, env, argv);
+		}
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
@@ -114,10 +120,17 @@ static int	pid_status(int argc, t_env *env)
 
 	status = 0;
 	i = -1;
-	free_all_int(env->pfd);
-	while (++i < env->n_cmds)
-		waitpid(env->pid[i], &status, 0);
-	if (env->pid)
-		free(env->pid);
+	if (env)
+	{
+		while (++i < env->n_cmds)
+			waitpid(env->pid[i], &status, 0);
+		ft_closing_all(env->pfd);
+		free_all_int(env->pfd);
+		if (env->pid)
+		{
+			free(env->pid);
+			env->pid =  NULL;
+		}
+	}
 	return (WEXITSTATUS(status));
 }

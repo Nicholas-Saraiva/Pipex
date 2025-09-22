@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 18:24:41 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/08/29 18:25:37 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/22 16:35:25 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,13 @@ void	ft_free_all(char **str)
 	i = -1;
 	if (!str)
 		return ;
-	while (str[++i])
+	while (str && str[++i])
+	{
 		free(str[i]);
+		str[i] = NULL;
+	}
 	free(str);
+	str = NULL;
 }
 
 int	init_pid(pid_t *pid)

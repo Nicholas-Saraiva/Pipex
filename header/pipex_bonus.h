@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:45:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/16 17:24:07 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/22 15:33:27 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,6 @@ void	get_fd_file_b(int fd_file[2], char **argv, int argc, t_env *env);
 //---cmd_not_found_bonus
 void	cmd_not_found_bonus(char **args, t_env *env, char *cmd);
 
+//close_fd
+void	ft_closing_all(int **pfd);
 #endif
