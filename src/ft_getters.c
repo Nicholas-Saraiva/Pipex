@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/31 17:48:18 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/22 16:36:02 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/23 12:56:00 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,17 @@ char	*get_shell(char **env)
 		if (ft_strncmp(env[i], "SHELL=", 6) == 0)
 			break ;
 	}
-	str = ft_split(*(env + i), '/');
-	i = -1;
-	while (str && str[++i])
-		;
-	shell = ft_strdup(str[i - 1]);
-	ft_free_all(str);
-	return (shell);
+	if (env && env[i])
+	{
+		str = ft_split(*(env + i), '/');
+		i = -1;
+		while (str && str[++i])
+			;
+		shell = ft_strdup(str[i - 1]);
+		ft_free_all(str);
+		return (shell);
+	}
+	return (NULL);
 }
 
 char	**get_paths(char **env)

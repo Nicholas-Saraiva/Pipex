@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/22 16:31:37 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/23 13:01:47 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	main(int argc, char *argv[], char *env[])
 	int	status;
 
 	status = 0;
-	if (argc < 5 || !(*env))
+	if (argc != 5 || !(*env))
 		return (2);
 	fill_var(fd_file, pfd, pid_cmds);
 	get_fd_file(fd_file, argv[1], argv[4], env);

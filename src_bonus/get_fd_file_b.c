@@ -6,15 +6,15 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 21:57:54 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/17 21:57:56 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/23 12:43:34 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h" 
 
-void	get_fd_file_b(int fd_file[2], char **argv, int argc, t_env *env)
+void	get_fd_file_b(char **argv, int argc, t_env *env)
 {
-	fd_file[0] = -1;
+	env->fd_file[0] = -1;
 	if (!env->here_doc)
 	{
 		if (access(argv[1], F_OK) != 0)
@@ -22,18 +22,20 @@ void	get_fd_file_b(int fd_file[2], char **argv, int argc, t_env *env)
 				argv[1], env->envp, 1);
 		else
 		{
-			fd_file[0] = open(argv[1], O_RDONLY);
-			if (fd_file[0] == -1)
+			env->fd_file[0] = open(argv[1], O_RDONLY);
+			if (env->fd_file[0] == -1)
 				message_error(": Permission denied", argv[1], env->envp, 0);
 		}
-		fd_file[1] = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0671);
-		if (fd_file[1] == -1)
+		env->fd_file[1] = open(argv[argc - 1],
+				O_WRONLY | O_CREAT | O_TRUNC, 0671);
+		if (env->fd_file[1] == -1)
 			message_error(": Permission denied", argv[argc - 1], env->envp, 0);
 	}
 	else
 	{
-		fd_file[1] = open(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0671);
-		if (fd_file[1] == -1)
+		env->fd_file[1] = open(argv[argc - 1],
+				O_WRONLY | O_CREAT | O_APPEND, 0671);
+		if (env->fd_file[1] == -1)
 			message_error(": Permission denied", argv[argc - 1], env->envp, 0);
 	}
 }

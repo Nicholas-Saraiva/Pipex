@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 15:13:37 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/22 16:20:24 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/23 12:35:08 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,13 @@ int	**creating_pfds(int argc)
 	return (pfd);
 }
 
-void	fill_var(int *fd_file, t_env *env, int argc, char **envp)
+void	fill_var_bonus(t_env *env, int argc, char **envp)
 {
 	int	i;
 
 	i = -1;
-	fd_file[0] = 0;
-	fd_file[1] = 0;
+	env->fd_file[0] = 0;
+	env->fd_file[1] = 0;
 	env->pid = ft_calloc(argc - 3, sizeof(pid_t));
 	if (!env->pid)
 		exit(1);
@@ -69,8 +69,10 @@ void	free_exit(char **args, char *cmd, int to_exit, t_env *env)
 		free(cmd);
 	if (env)
 	{
-		if (!to_exit)
-			ft_closing_all(env->pfd);
+		safe_close(&env->fd_file[0]);
+		safe_close(&env->fd_file[1]);
+		if (to_exit)
+			ft_closing_all(env);
 		free_all_int(env->pfd);
 		if (env->pid)
 			free(env->pid);

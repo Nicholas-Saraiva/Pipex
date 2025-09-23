@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 21:59:13 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/22 18:00:48 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/23 12:09:03 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,9 @@ void	cmd_not_found_bonus(char **args, t_env *env, char *cmd)
 		ft_free_all(args);
 	if (env)
 	{
-		ft_closing_all(env->pfd);
+		safe_close(&env->fd_file[0]);
+		safe_close(&env->fd_file[1]);
+		ft_closing_all(env);
 		free_all_int(env->pfd);
 		if (env->pid)
 			free(env->pid);

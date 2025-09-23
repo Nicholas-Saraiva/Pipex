@@ -6,7 +6,7 @@
 /*   By: nsaraiva <nsaraiva@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 12:51:08 by nsaraiva          #+#    #+#             */
-/*   Updated: 2025/09/22 18:30:18 by nsaraiva         ###   ########.fr       */
+/*   Updated: 2025/09/23 12:46:03 by nsaraiva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,24 +21,25 @@ static void		closing_pfd(int i, int argc, t_env *env, int *fd_file);
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_env	env;
-	int		fd_file[2];
 	int		i;
 
 	if (argc < 5 || !(*envp))
 		exit(2);
-	fill_var(fd_file, &env, argc, envp);
+	fill_var_bonus(&env, argc, envp);
 	check_here_doc(&env, argv, &i);
-	get_fd_file_b(fd_file, argv, argc, &env);
+	get_fd_file_b(argv, argc, &env);
 	while (env.n_cmds - ++i > 0)
 	{
 		if (i == 0)
-			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[i], fd_file);
+			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[i], env.fd_file);
 		else if (i == env.n_cmds - 1)
-			env.pid[i] = r_fork(argv[i + 2], &env, env.pfd[i - 1], fd_file);
+			env.pid[i] = r_fork(argv[i + 2], &env, env.pfd[i - 1], env.fd_file);
 		else
 			env.pid[i] = g_fork(argv[i + 2], &env, env.pfd[i], env.pfd[i - 1]);
-		closing_pfd(i, argc, &env, fd_file);
+		closing_pfd(i, argc, &env, env.fd_file);
 	}
+	safe_close(&env.fd_file[0]);
+	safe_close(&env.fd_file[1]);
 	return (pid_status(argc, &env));
 }
 
@@ -55,15 +56,12 @@ static pid_t	g_fork(char *argv, t_env *env, int fd_out[2], int fd_in[2])
 	if (pid == 0)
 	{
 		if (!cmd_path || !(*args))
-		{
-			closing_fds(fd_out, fd_in);
 			cmd_not_found_bonus(args, env, argv);
-		}
 		if (dup2(fd_in[0], STDIN_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
 		if (dup2(fd_out[1], STDOUT_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
-		closing_fds(fd_out, fd_in);
+		ft_closing_all(env);
 		if (execve(cmd_path, args, env->envp) == -1)
 			free_exit(args, cmd_path, 1, env);
 	}
@@ -84,14 +82,14 @@ static pid_t	r_fork(char *argv, t_env *env, int pfd[2], int fd_file[2])
 	{
 		if (!cmd_path || !(*args))
 		{
-			closing_fds(pfd, fd_file);
+			ft_closing_all(env);
 			cmd_not_found_bonus(args, env, argv);
 		}
 		if (dup2(fd_file[1], STDOUT_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
 		if (dup2(pfd[0], STDIN_FILENO) == -1)
 			free_exit(args, cmd_path, 1, env);
-		closing_fds(pfd, fd_file);
+		ft_closing_all(env);
 		if (execve(cmd_path, args, env->envp) == -1)
 			free_exit(args, cmd_path, 1, env);
 	}
@@ -124,12 +122,12 @@ static int	pid_status(int argc, t_env *env)
 	{
 		while (++i < env->n_cmds)
 			waitpid(env->pid[i], &status, 0);
-		ft_closing_all(env->pfd);
+		ft_closing_all(env);
 		free_all_int(env->pfd);
 		if (env->pid)
 		{
 			free(env->pid);
-			env->pid =  NULL;
+			env->pid = NULL;
 		}
 	}
 	return (WEXITSTATUS(status));
